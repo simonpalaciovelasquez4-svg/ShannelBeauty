@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - Shannel Beauty</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="img/unnamed.jpg" alt="logo de Shannel Beauty" width="150" height="150"><h1>Shannel Beauty</h1>
+        </div>
+    </header>
+    <nav>
+        <div class="Navegador">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="servicios.html">Servicios</a></li>
+                <li><a href="galeria.html">Galería</a></li>
+                <li><a href="nosotros.html">Nosotros</a></li>
+                <li><a href="reservas.html">Reservas</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <section class="reservation">
+            <h2>Reservar una Cita</h2>
+            <p>Rellena el siguiente formulario para solicitar una reserva. Te confirmaremos la disponibilidad por email o por teléfono.</p>
+            <div class="reservation-container">
+                <!-- Para enviar a un correo: crea un formulario en Formspree y pega aquí su endpoint en el atributo data-formspree-endpoint.
+                     Ejemplo: data-formspree-endpoint="https://formspree.io/f/yourFormId" -->
+                <form id="reservationForm" class="reservation-form" data-formspree-endpoint="https://formspree.io/f/mblwdvgw">
+                    <!-- Si usas Formspree, el campo _replyto ayuda a que el remitente sea el email del cliente -->
+                    <input type="hidden" name="_subject" value="Nueva reserva - Shannel Beauty">
+                    <input type="hidden" name="_replyto" id="_replyto" value="">
+                    <input type="hidden" name="service_text" id="service_text" value="">
+                    <label for="name">Nombre completo</label>
+                    <input id="name" name="name" type="text" placeholder="Tu nombre" required>
+
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="tu@ejemplo.com" required>
+
+                    <label for="phone">Teléfono</label>
+                    <input id="phone" name="phone" type="tel" placeholder="+57 300 0000000" required>
+
+                    <label for="service">Servicio</label>
+                    <select id="service" name="service" required>
+                        <option value="">Selecciona un servicio</option>
+                        <option value="maquillaje_eventos">Maquillaje para Eventos (Social)</option>
+                        <option value="maquillaje_novia">Paquete Nupcial Completo (Novia)</option>
+                        <option value="clases_automaquillaje">Clases de Automaquillaje</option>
+                        <option value="clase_individual">Clase Individual</option>
+                        <option value="clase_grupo">Grupo (por persona)</option>
+                        <option value="otro">Otro (especificar en comentarios)</option>
+                    </select>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="date">Fecha</label>
+                            <input id="date" name="date" type="date" required>
+                        </div>
+                        <div>
+                            <label for="time">Hora</label>
+                            <input id="time" name="time" type="time" required>
+                        </div>
+                    </div>
+
+                    <label for="message">Comentarios / Requerimientos</label>
+                    <textarea id="message" name="message" placeholder="Describe cualquier preferencia o alergias" rows="4"></textarea>
+
+                    <button type="submit" class="book-button">Solicitar Reserva</button>
+                </form>
+
+                <div id="reservationResult" class="reservation-result" aria-live="polite" style="display:none;"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Shannel Beauty</h3>
+                <p>Tu belleza en manos profesionales</p>
+            </div>
+            <div class="footer-contact">
+                <p>Email: info@shannelbeauty.com</p>
+                <p>Tel: +57 321 8578086</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Shannel Beauty. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Client-side handler: no backend, so we show a confirmation message and clear the form
+        (function(){
+            const form = document.getElementById('reservationForm');
+            const result = document.getElementById('reservationResult');
+
+            // Set minimum allowed date to today and clear messages when user changes the date
+            const dateInput = document.getElementById('date');
+            if(dateInput){
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                dateInput.min = today.toISOString().split('T')[0];
+                dateInput.addEventListener('change', function(){
+                    if(result.style.display === 'block'){
+                        result.style.display = 'none';
+                    }
+                });
+            }
+
+            form.addEventListener('submit', function(e){
+                e.preventDefault();
+                const data = new FormData(form);
+                // populate hidden _replyto for Formspree
+                const replyto = data.get('email') || '';
+                const replyInput = document.getElementById('_replyto');
+                if(replyInput){ replyInput.value = replyto; }
+
+                    // populate human-readable service text
+                    const serviceSelect = document.getElementById('service');
+                    const serviceTextInput = document.getElementById('service_text');
+                    if(serviceSelect && serviceTextInput){
+                        const selected = serviceSelect.options[serviceSelect.selectedIndex];
+                        serviceTextInput.value = selected ? selected.text : '';
+                        // refresh FormData with updated hidden
+                        data.set('service_text', serviceTextInput.value);
+                    }
+
+                const endpoint = form.dataset.formspreeEndpoint && form.dataset.formspreeEndpoint.trim();
+                // Basic validation (HTML required attributes handle most checks)
+                const name = data.get('name');
+                const email = data.get('email');
+                const service = data.get('service');
+                const date = data.get('date');
+                const time = data.get('time');
+
+                if(!name || !email || !service || !date || !time){
+                    result.style.display = 'block';
+                    result.style.color = '#b00020';
+                    result.textContent = 'Por favor completa los campos obligatorios.';
+                    return;
+                }
+
+                // Validate date is not earlier than today
+                try {
+                    const selDate = new Date(date);
+                    selDate.setHours(0,0,0,0);
+                    const now = new Date();
+                    now.setHours(0,0,0,0);
+                    if(selDate < now){
+                        result.style.display = 'block';
+                        result.style.color = '#b00020';
+                        result.textContent = 'La fecha no puede ser anterior a hoy. Por favor elige otra fecha.';
+                        return;
+                    }
+                } catch(err) {
+                    // If parsing fails, block submission
+                    result.style.display = 'block';
+                    result.style.color = '#b00020';
+                    result.textContent = 'Fecha inválida. Por favor selecciona una fecha válida.';
+                    return;
+                }
+
+                if(endpoint){
+                    // Send to Formspree
+                    fetch(endpoint, {
+                        method: 'POST',
+                        body: data,
+                        headers: { 'Accept': 'application/json' }
+                    }).then(function(response){
+                        if(response.ok){
+                            result.style.display = 'block';
+                            result.style.color = '#145214';
+                            result.innerHTML = '<strong>¡Solicitud enviada!</strong> Gracias ' + (name.split(' ')[0]||name) + '. Te contactaremos pronto.';
+                            form.reset();
+                        } else {
+                            return response.json().then(function(err){ throw err; });
+                        }
+                    }).catch(function(err){
+                        result.style.display = 'block';
+                        result.style.color = '#b00020';
+                        result.innerHTML = 'Ocurrió un error al enviar la solicitud. Por favor intenta de nuevo o contáctanos directamente a info@shannelbeauty.com.';
+                        console.error('Formspree error:', err);
+                    });
+                    return;
+                }
+
+                // Fallback: Simulate success if no endpoint configured
+                result.style.display = 'block';
+                result.style.color = '#145214';
+                result.innerHTML = '<strong>¡Solicitud simulada!</strong> Gracias ' + (name.split(' ')[0]||name) + '. Tu solicitud quedó registrada localmente.';
+                form.reset();
+            });
+        })();
+    </script>
+</body>
+</html>

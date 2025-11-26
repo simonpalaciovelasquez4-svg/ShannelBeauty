@@ -49,6 +49,47 @@ main section {
     margin: 0 auto;
 }
 
+/* About page: align photos with paragraphs */
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.about-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.about-item .about-photo {
+    width: 360px;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.about-item .about-text-block {
+    text-align: left;
+}
+
+.about-item.reverse {
+    flex-direction: row-reverse;
+}
+
+@media (max-width: 860px) {
+    .about-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    .about-item .about-text-block { text-align: center; }
+    .about-item .about-photo { width: 100%; height: 220px; }
+}
+
 /* Listas y detalles alineados al centro */
 .service-details, .about-features {
     text-align: center;
@@ -111,8 +152,8 @@ p {
     color: #ff6b9d;
 }
 
-/* Hero Section */
-.hero {
+/* Hero Section (applies to .hero and .services-hero) */
+.hero, .services-hero {
     background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.7)), url('../img/hero-bg.png');
     background-size: cover;
     background-position: center;
@@ -147,6 +188,39 @@ p {
     gap: 2rem;
     max-width: 1000px;
     margin: 0 auto;
+}
+
+/* Ensure featured service cards on the homepage are aligned and consistent */
+.services-preview .service-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    min-height: 400px;
+}
+
+.services-preview .service-image,
+.services-preview .service-card .image-container {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.services-preview .service-image img,
+.services-preview .service-card .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.services-preview .service-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .service-link {
@@ -611,4 +685,67 @@ footer {
     margin-top: 2rem;
     padding-top: 2rem;
     border-top: 1px solid #444;
+}
+
+/* WhatsApp floating button */
+.whatsapp-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #fff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(18,140,126,0.25);
+    z-index: 1000;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.whatsapp-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(18,140,126,0.28);
+}
+
+.whatsapp-button svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+    fill: white;
+}
+
+@media (max-width: 520px) {
+    .whatsapp-button { right: 14px; bottom: 14px; width: 48px; height: 48px; }
+    .whatsapp-button svg { width: 22px; height: 22px; }
+}
+
+/* Tooltip for whatsapp button */
+.whatsapp-button::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 70px;
+    bottom: 50%;
+    transform: translateY(50%) translateX(6px);
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.whatsapp-button:hover::after {
+    opacity: 1;
+    transform: translateY(50%) translateX(0px);
+}
+
+@media (max-width: 520px) {
+    .whatsapp-button::after { display: none; }
 }
